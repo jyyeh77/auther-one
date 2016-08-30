@@ -1,8 +1,9 @@
-'use strict'; 
+'use strict';
 
 var app = require('express')();
 var path = require('path');
 var session = require('express-session');
+var User = require('../api/users/user.model');
 
 app.use(session({
 	secret: 'KinisKing'
@@ -25,6 +26,21 @@ app.use('/api', function (req, res, next) {
 });
 
 app.use('/api', require('../api/api.router'));
+
+app.post('/login', function (req, res, next) {
+  User.findOne({
+    where: req.body
+  })
+  .then(function (user) {
+    if (!user) {
+      res.sendStatus(401);
+    } else {
+      req.session.userId = user.id;
+      res.sendStatus(204);
+    }
+  })
+  .catch(next);
+});
 
 
 var validFrontendRoutes = ['/', '/stories', '/users', '/stories/:id', '/users/:id', '/signup', '/login'];
