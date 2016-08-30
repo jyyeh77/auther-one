@@ -27,6 +27,8 @@ app.use('/api', function (req, res, next) {
 
 app.use('/api', require('../api/api.router'));
 
+
+// route to handle login ajax request from login page
 app.post('/login', function (req, res, next) {
   User.findOne({
     where: req.body
@@ -40,6 +42,23 @@ app.post('/login', function (req, res, next) {
     }
   })
   .catch(next);
+});
+
+// route to handle signup ajax request from signup page
+app.post('/signup', function (req, res, next) {
+	User.create({
+		email: req.body.email,
+		password: req.body.password
+	})
+		.then(function (user) {
+			if (!user) {
+				res.sendStatus(401);
+			} else {
+				req.session.userId = user.id;
+				res.sendStatus(204);
+			}
+		})
+		.catch(next);
 });
 
 
