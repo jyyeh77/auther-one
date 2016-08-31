@@ -1,20 +1,14 @@
 'use strict'
 
-app.controller('LoginCtrl', function($scope, $http, $state, $log){
-
-  $scope.submitLogin = function(user){
-
-    $http.post('/login', user)
-    .then(function(foundUser){
-
-      // if this fails, will defer automatically to .catch!
-      if (foundUser) {
-        $state.go('stories');
-      }
-    }).catch(function(){
-        $scope.invalidUser = true;
-    });
-  };
-
-
+app.controller('LoginCtrl', function($scope, $state, $log, Auth){
+	$scope.login = function(user){
+		// need to return result of AJAX post to do state transition
+		return Auth.login(user)
+			.then(function(){
+				$state.go('stories');
+			})
+			.catch(function(){
+				$scope.invalidLogin = true;
+			})
+	}
 });

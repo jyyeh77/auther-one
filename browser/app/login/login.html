@@ -9,8 +9,8 @@
         <label>password</label>
         <input type="password" class="form-control" ng-model="user.password" required />
       </div>
-      <button type="submit" class="btn btn-block btn-primary" ng-click="submitLogin(user)">login</button>
-      <p ng-show="invalidUser"><strong>This user does not exist! Please sign up.</strong></p>
+      <button type="submit" class="btn btn-block btn-primary" ng-click="login(user)">login</button>
+      <p ng-show="invalidLogin"><strong>This email/password combination doesn't exist! Please sign up or sign in correctly.</strong></p>
     </form>
   </div>
   <div class="or buffer">
