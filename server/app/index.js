@@ -38,6 +38,7 @@ app.post('/login', function (req, res, next) {
       res.sendStatus(401);
     } else {
       req.session.userId = user.id;
+      console.log("USER ID!!!!", req.session.userId);
       res.sendStatus(204);
     }
   })
@@ -61,6 +62,9 @@ app.post('/signup', function (req, res, next) {
 		.catch(next);
 });
 
+app.get('/logout', function(req, res, next){
+  req.session.destroy();
+})
 
 var validFrontendRoutes = ['/', '/stories', '/users', '/stories/:id', '/users/:id', '/signup', '/login'];
 var indexPath = path.join(__dirname, '..', '..', 'public', 'index.html');
