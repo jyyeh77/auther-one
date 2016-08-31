@@ -7,12 +7,10 @@ var User = require('../api/users/user.model');
 
 app.use(session({
 	secret: 'KinisKing'
-}))
+}));
 app.use(require('./logging.middleware'));
 
 app.use(require('./request-state.middleware'));
-
-
 
 app.use(function (req, res, next) {
 	console.log('session', req.session);
@@ -34,12 +32,12 @@ app.post('/login', function (req, res, next) {
     where: req.body
   })
   .then(function (user) {
-  	console.log("GOT USER: ", user)
+  	console.log("GOT USER: ", user);
     if (!user) {
       res.sendStatus(401);
     } else {
       req.session.userId = user.id;
-	    console.log("USER ID: ", user.id)
+	    console.log("USER ID: ", user.id);
       res.send({id: user.id, email: user.email});
     }
   })
@@ -63,12 +61,21 @@ app.post('/signup', function (req, res, next) {
 		.catch(next);
 });
 
+app.get('/auth/me', function(req, res, next){
+  console.log('/auth/me route entered');
+
+  User.findById(req.session.userId)
+  .then(function(foundUser){
+      res.send(foundUser);
+  });
+});
+
 app.get('/logout', function(req, res, next){
   req.session.userId = null;
 	req.session.destroy();
 	// sends response back to front end to resolve ajax get request - redirects to 'home' state via UI-ROUTER
 	res.sendStatus(204);
-})
+});
 
 var validFrontendRoutes = ['/', '/stories', '/users', '/stories/:id', '/users/:id', '/signup', '/login'];
 var indexPath = path.join(__dirname, '..', '..', 'public', 'index.html');

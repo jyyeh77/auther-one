@@ -12,13 +12,13 @@ app.directive('navbar', function ($state, $location, $http) {
       };
 
       scope.logout = function(){
-        console.log('logout function started')
+        console.log('logout function started');
        return $http.get('/logout')
 	       .then(function(){
 	       	  console.log("Going home!");
 	       	  $state.go('home');
 	       });
-      }
+      };
     }
-  }
+  };
 });

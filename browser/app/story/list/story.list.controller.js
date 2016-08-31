@@ -5,8 +5,10 @@ app.controller('StoryListCtrl', function ($scope, stories, Story, users, Auth) {
   $scope.users = users;
 	// $scope.getCurrentUser = Auth.getCurrentUser;
 	$scope.isLoggedIn = Auth.getCurrentUser();
+  $scope.currentlyLoggedIn = Auth.getLoggedInUser();
+  if($scope.currentlyLoggedIn)
   $scope.newStory = new Story();
-  
+  console.log("Auth.getCurrentUser : ", Auth.getCurrentUser());
   $scope.removeStory = function (story) {
     story.destroy()
     .then(function () {
