@@ -5,6 +5,7 @@ var Sequelize = require('sequelize');
 var db = require('../../_db');
 
 var User = db.define('user', {
+	googleId: Sequelize.STRING,
   name: Sequelize.STRING,
   photo: {
     type: Sequelize.STRING,

@@ -4,6 +4,8 @@ var app = require('express')();
 var path = require('path');
 var session = require('express-session');
 var User = require('../api/users/user.model');
+var passport = require('passport');
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 app.use(session({
 	secret: 'KinisKing'
@@ -13,9 +15,67 @@ app.use(require('./logging.middleware'));
 app.use(require('./request-state.middleware'));
 
 app.use(function (req, res, next) {
-	console.log('session', req.session);
 	next();
 });
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google authentication and login
+app.get('/auth/google', passport.authenticate('google', { scope : 'email' }));
+
+// handle the callback after Google has authenticated the user
+app.get('/auth/google/callback',
+	passport.authenticate('google', {
+		successRedirect : '/', // or wherever
+		failureRedirect : '/' // or wherever
+	})
+);
+
+// passport stuff
+passport.serializeUser(function (user, done) {
+	done(null, user.id);
+});
+
+passport.deserializeUser(function (id, done) {
+	User.findById(id)
+		.then(function (user) {
+			done(null, user);
+		})
+		.catch(done);
+});
+
+passport.use(
+	new GoogleStrategy({
+			clientID: '299872649527-f6036sfj7bq8h4jl3jrjrklaps0ni5pt.apps.googleusercontent.com',
+			clientSecret: 'xcK3ACUYNeYDQcyHdQVM7Nfo',
+			callbackURL: 'http://127.0.0.1:8080/auth/google/callback'
+		},
+		// Google will send back the token and profile
+		function (token, refreshToken, profile, done) {
+			// the callback will pass back user profile information and each service (Facebook, Twitter, and Google) will pass it back a different way. Passport standardizes the information that comes back in its profile object.
+			/*
+			 --- fill this part in ---
+			 */
+			var info = {
+				name: profile.displayName,
+				email: profile.emails[0].value,
+				photo: profile.photos ? profile.photos[0].value : undefined
+			};
+			User.findOrCreate({
+				where: {googleId: profile.id},
+				defaults: info
+			})
+				.spread(function (user) {
+					console.log("Created user")
+					done(null, user);
+				})
+				.catch(done);
+
+
+		})
+);
+
+
 
 app.use('/api', function (req, res, next) {
 	if (!req.session.counter) req.session.counter = 0;
@@ -62,8 +122,6 @@ app.post('/signup', function (req, res, next) {
 });
 
 app.get('/auth/me', function(req, res, next){
-  console.log('/auth/me route entered');
-
   User.findById(req.session.userId)
   .then(function(foundUser){
       res.send(foundUser);
