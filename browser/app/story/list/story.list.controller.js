@@ -1,9 +1,10 @@
 'use strict';
 
-app.controller('StoryListCtrl', function ($scope, stories, Story, users) {
+app.controller('StoryListCtrl', function ($scope, stories, Story, users, Auth) {
   $scope.stories = stories;
   $scope.users = users;
-
+	// $scope.getCurrentUser = Auth.getCurrentUser;
+	$scope.isLoggedIn = Auth.getCurrentUser();
   $scope.newStory = new Story();
   
   $scope.removeStory = function (story) {

@@ -12,7 +12,7 @@ app.use(require('./logging.middleware'));
 
 app.use(require('./request-state.middleware'));
 
-app.use(require('./statics.middleware'));
+
 
 app.use(function (req, res, next) {
 	console.log('session', req.session);
@@ -34,12 +34,13 @@ app.post('/login', function (req, res, next) {
     where: req.body
   })
   .then(function (user) {
+  	console.log("GOT USER: ", user)
     if (!user) {
       res.sendStatus(401);
     } else {
       req.session.userId = user.id;
-      console.log("USER ID!!!!", req.session.userId);
-      res.sendStatus(204);
+	    console.log("USER ID: ", user.id)
+      res.send({id: user.id, email: user.email});
     }
   })
   .catch(next);
@@ -63,7 +64,10 @@ app.post('/signup', function (req, res, next) {
 });
 
 app.get('/logout', function(req, res, next){
-  req.session.destroy();
+  req.session.userId = null;
+	req.session.destroy();
+	// sends response back to front end to resolve ajax get request - redirects to 'home' state via UI-ROUTER
+	res.sendStatus(204);
 })
 
 var validFrontendRoutes = ['/', '/stories', '/users', '/stories/:id', '/users/:id', '/signup', '/login'];
@@ -74,6 +78,7 @@ validFrontendRoutes.forEach(function (stateRoute) {
   });
 });
 
+app.use(require('./statics.middleware'));
 app.use(require('./error.middleware'));
 
 module.exports = app;
