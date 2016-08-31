@@ -27,7 +27,7 @@
           <a ui-sref="signup">signup</a>
         </li>
         <li ui-sref-active="active">
-          <a ui-sref="login">login</a>
+          <a ui-sref="login" ng-hide="isLoggedIn">login</a>
         </li>
         <li>
           <button class="navbar-btn btn btn-default" ng-click="logout()">logout</button>

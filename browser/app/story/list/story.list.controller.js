@@ -1,14 +1,15 @@
 'use strict';
 
-app.controller('StoryListCtrl', function ($scope, stories, Story, users, Auth) {
+app.controller('StoryListCtrl', function ($scope, stories, Story, users, Auth, $interval) {
   $scope.stories = stories;
   $scope.users = users;
-	// $scope.getCurrentUser = Auth.getCurrentUser;
-	$scope.isLoggedIn = Auth.getCurrentUser();
-  $scope.currentlyLoggedIn = Auth.getLoggedInUser();
-  if($scope.currentlyLoggedIn)
+
+	$scope.isLoggedIn = $interval(function(){
+		Auth.getCurrentUser();
+	}, 300);
+
   $scope.newStory = new Story();
-  console.log("Auth.getCurrentUser : ", Auth.getCurrentUser());
+
   $scope.removeStory = function (story) {
     story.destroy()
     .then(function () {
